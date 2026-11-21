@@ -332,8 +332,8 @@
     }
   ],
   "images": {
-    "logo": "logo.png",
-    "hero": "columns.png",
-    "legal": "legal.png"
+    "logo": "photos/logo.svg",
+    "hero": "photos/columns.svg",
+    "legal": "photos/legal.svg"
   }
 }
