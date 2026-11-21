@@ -1,7 +1,7 @@
 {
   "media": {
     "input": "photos",
-    "output": "https://mamdouh-hazem.github.io/lawyer/photos"
+    "output": "photos"
   },
   "content": [
     {
@@ -448,25 +448,26 @@
         },
         {
           "name": "images",
-          "label": "الصور",
+          "label": "روابط الصور",
           "type": "object",
           "fields": [
             {
               "name": "logo",
               "label": "الشعار",
-              "type": "image"
+              "type": "string"
             },
             {
               "name": "hero",
               "label": "صورة الواجهة",
-              "type": "image"
+              "type": "string"
             },
             {
               "name": "legal",
               "label": "صورة العدالة",
-              "type": "image"
+              "type": "string"
             }
-          ]
+          ],
+          "description": "يمكن تغيير الصور بلصق رابط مباشر لصورة. اترك الروابط الحالية للحفاظ على التصميم."
         }
       ]
     }
