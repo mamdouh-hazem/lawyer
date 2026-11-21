@@ -143,7 +143,12 @@
                   "type": "string"
                 }
               ],
-              "list": true
+              "list": {
+                "collapsible": {
+                  "collapsed": true,
+                  "summary": "{title}"
+                }
+              }
             }
           ]
         },
@@ -237,7 +242,12 @@
                   "type": "string"
                 }
               ],
-              "list": true
+              "list": {
+                "collapsible": {
+                  "collapsed": true,
+                  "summary": "{label}"
+                }
+              }
             },
             {
               "name": "note",
@@ -395,7 +405,12 @@
               "type": "string"
             }
           ],
-          "list": true
+          "list": {
+            "collapsible": {
+              "collapsed": true,
+              "summary": "{name}"
+            }
+          }
         },
         {
           "name": "posts",
@@ -424,7 +439,12 @@
               "list": true
             }
           ],
-          "list": true
+          "list": {
+            "collapsible": {
+              "collapsed": true,
+              "summary": "{title}"
+            }
+          }
         },
         {
           "name": "images",
