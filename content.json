@@ -332,8 +332,8 @@
     }
   ],
   "images": {
-    "logo": "photos/photos/logo.svg",
-    "hero": "photos/photos/columns.svg",
-    "legal": "photos/photos/legal.svg"
+    "logo": "https://mamdouh-hazem.github.io/lawyer/photos/photos/logo.svg",
+    "hero": "https://mamdouh-hazem.github.io/lawyer/photos/photos/columns.svg",
+    "legal": "https://mamdouh-hazem.github.io/lawyer/photos/photos/legal.svg"
   }
 }
