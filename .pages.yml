@@ -60,7 +60,7 @@
         },
         {
           "name": "intro",
-          "label": "المقدمة",
+          "label": "إزاي أقدر أساعدك",
           "type": "object",
           "fields": [
             {
@@ -74,18 +74,68 @@
               "type": "string"
             },
             {
-              "name": "textBefore",
-              "label": "النص قبل الاسم",
+              "name": "items",
+              "label": "الخدمات",
+              "type": "object",
+              "fields": [
+                {
+                  "name": "title",
+                  "label": "اسم الخدمة",
+                  "type": "string"
+                },
+                {
+                  "name": "text",
+                  "label": "التفاصيل",
+                  "type": "text"
+                }
+              ],
+              "list": {
+                "collapsible": {
+                  "collapsed": true,
+                  "summary": "{title}"
+                }
+              }
+            },
+            {
+              "name": "button",
+              "label": "نص زر التواصل",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "name": "intake",
+          "label": "نموذج التواصل",
+          "type": "object",
+          "fields": [
+            {
+              "name": "title",
+              "label": "العنوان",
               "type": "string"
             },
             {
-              "name": "textAfter",
-              "label": "النص بعد الاسم",
+              "name": "description",
+              "label": "الوصف",
+              "type": "text"
+            },
+            {
+              "name": "label",
+              "label": "عنوان الحقل",
+              "type": "string"
+            },
+            {
+              "name": "placeholder",
+              "label": "النص الإرشادي",
+              "type": "string"
+            },
+            {
+              "name": "warning",
+              "label": "تنبيه الخصوصية",
               "type": "text"
             },
             {
               "name": "button",
-              "label": "نص الزر",
+              "label": "نص زر واتساب",
               "type": "string"
             }
           ]
@@ -197,61 +247,6 @@
             {
               "name": "button",
               "label": "نص الزر",
-              "type": "string"
-            }
-          ]
-        },
-        {
-          "name": "about",
-          "label": "نبذة المحامي",
-          "type": "object",
-          "fields": [
-            {
-              "name": "title",
-              "label": "العنوان",
-              "type": "string"
-            },
-            {
-              "name": "photoAlt",
-              "label": "وصف الصورة",
-              "type": "string"
-            },
-            {
-              "name": "heading",
-              "label": "العنوان",
-              "type": "string"
-            },
-            {
-              "name": "bio",
-              "label": "النبذة",
-              "type": "text"
-            },
-            {
-              "name": "details",
-              "label": "البيانات",
-              "type": "object",
-              "fields": [
-                {
-                  "name": "label",
-                  "label": "الوصف",
-                  "type": "string"
-                },
-                {
-                  "name": "value",
-                  "label": "القيمة",
-                  "type": "string"
-                }
-              ],
-              "list": {
-                "collapsible": {
-                  "collapsed": true,
-                  "summary": "{label}"
-                }
-              }
-            },
-            {
-              "name": "note",
-              "label": "الملاحظة",
               "type": "string"
             }
           ]
