@@ -1,0 +1,454 @@
+{
+  "media": {
+    "input": "photos",
+    "output": "photos"
+  },
+  "content": [
+    {
+      "name": "site",
+      "label": "تعديل الموقع",
+      "type": "file",
+      "path": "content.json",
+      "format": "json",
+      "fields": [
+        {
+          "name": "name",
+          "label": "الاسم",
+          "type": "string"
+        },
+        {
+          "name": "phone",
+          "label": "رقم الهاتف",
+          "type": "string"
+        },
+        {
+          "name": "email",
+          "label": "البريد الإلكتروني",
+          "type": "string"
+        },
+        {
+          "name": "hero",
+          "label": "الواجهة الرئيسية",
+          "type": "object",
+          "fields": [
+            {
+              "name": "kicker",
+              "label": "السطر التعريفي",
+              "type": "string"
+            },
+            {
+              "name": "titleBefore",
+              "label": "اللقب قبل الاسم",
+              "type": "string"
+            },
+            {
+              "name": "subtitle1",
+              "label": "الوصف - السطر الأول",
+              "type": "string"
+            },
+            {
+              "name": "subtitle2",
+              "label": "الوصف - السطر الثاني",
+              "type": "string"
+            },
+            {
+              "name": "button",
+              "label": "نص الزر",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "name": "intro",
+          "label": "المقدمة",
+          "type": "object",
+          "fields": [
+            {
+              "name": "small",
+              "label": "العنوان الصغير",
+              "type": "string"
+            },
+            {
+              "name": "title",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "textBefore",
+              "label": "النص قبل الاسم",
+              "type": "string"
+            },
+            {
+              "name": "textAfter",
+              "label": "النص بعد الاسم",
+              "type": "text"
+            },
+            {
+              "name": "button",
+              "label": "نص الزر",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "name": "servicesHead",
+          "label": "عنوان الخدمات",
+          "type": "object",
+          "fields": [
+            {
+              "name": "small",
+              "label": "العنوان الصغير",
+              "type": "string"
+            },
+            {
+              "name": "title",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "button",
+              "label": "نص الزر",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "name": "steps",
+          "label": "خطوات التواصل",
+          "type": "object",
+          "fields": [
+            {
+              "name": "small",
+              "label": "العنوان الصغير",
+              "type": "string"
+            },
+            {
+              "name": "title",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "items",
+              "label": "العناصر",
+              "type": "object",
+              "fields": [
+                {
+                  "name": "title",
+                  "label": "العنوان",
+                  "type": "string"
+                },
+                {
+                  "name": "text",
+                  "label": "النص",
+                  "type": "string"
+                }
+              ],
+              "list": true
+            }
+          ]
+        },
+        {
+          "name": "articlesHead",
+          "label": "عنوان المقالات",
+          "type": "object",
+          "fields": [
+            {
+              "name": "small",
+              "label": "العنوان الصغير",
+              "type": "string"
+            },
+            {
+              "name": "title",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "button",
+              "label": "نص الزر",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "name": "banner",
+          "label": "شريط التواصل",
+          "type": "object",
+          "fields": [
+            {
+              "name": "kicker",
+              "label": "السطر التعريفي",
+              "type": "string"
+            },
+            {
+              "name": "line1",
+              "label": "السطر الأول",
+              "type": "string"
+            },
+            {
+              "name": "line2",
+              "label": "السطر الثاني",
+              "type": "string"
+            },
+            {
+              "name": "button",
+              "label": "نص الزر",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "name": "about",
+          "label": "نبذة المحامي",
+          "type": "object",
+          "fields": [
+            {
+              "name": "title",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "photoAlt",
+              "label": "وصف الصورة",
+              "type": "string"
+            },
+            {
+              "name": "heading",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "bio",
+              "label": "النبذة",
+              "type": "text"
+            },
+            {
+              "name": "details",
+              "label": "البيانات",
+              "type": "object",
+              "fields": [
+                {
+                  "name": "label",
+                  "label": "الوصف",
+                  "type": "string"
+                },
+                {
+                  "name": "value",
+                  "label": "القيمة",
+                  "type": "string"
+                }
+              ],
+              "list": true
+            },
+            {
+              "name": "note",
+              "label": "الملاحظة",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "name": "servicesPage",
+          "label": "صفحة الخدمات",
+          "type": "object",
+          "fields": [
+            {
+              "name": "title",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "sub",
+              "label": "الوصف",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "name": "articlesPage",
+          "label": "صفحة المقالات",
+          "type": "object",
+          "fields": [
+            {
+              "name": "title",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "sub",
+              "label": "الوصف",
+              "type": "string"
+            }
+          ]
+        },
+        {
+          "name": "contactPage",
+          "label": "صفحة التواصل",
+          "type": "object",
+          "fields": [
+            {
+              "name": "title",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "sub",
+              "label": "الوصف",
+              "type": "string"
+            },
+            {
+              "name": "callLabel",
+              "label": "عنوان الاتصال",
+              "type": "string"
+            },
+            {
+              "name": "callHint",
+              "label": "نص رابط الاتصال",
+              "type": "string"
+            },
+            {
+              "name": "emailLabel",
+              "label": "عنوان البريد",
+              "type": "string"
+            },
+            {
+              "name": "emailHint",
+              "label": "نص رابط البريد",
+              "type": "string"
+            },
+            {
+              "name": "officeTitle",
+              "label": "عنوان قسم المكتب",
+              "type": "string"
+            },
+            {
+              "name": "officeText",
+              "label": "عنوان المكتب",
+              "type": "string"
+            },
+            {
+              "name": "hoursTitle",
+              "label": "عنوان قسم المواعيد",
+              "type": "string"
+            },
+            {
+              "name": "hoursText",
+              "label": "مواعيد العمل",
+              "type": "string"
+            },
+            {
+              "name": "noteTitle",
+              "label": "عنوان التنبيه",
+              "type": "string"
+            },
+            {
+              "name": "noteText",
+              "label": "نص التنبيه",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "name": "footer",
+          "label": "تذييل الموقع",
+          "type": "object",
+          "fields": [
+            {
+              "name": "tagline",
+              "label": "الوصف المختصر",
+              "type": "string"
+            },
+            {
+              "name": "disclaimer",
+              "label": "التنبيه القانوني",
+              "type": "text"
+            },
+            {
+              "name": "closing",
+              "label": "الملاحظة الختامية",
+              "type": "text"
+            }
+          ]
+        },
+        {
+          "name": "articleNote",
+          "label": "تنبيه المقالات",
+          "type": "text"
+        },
+        {
+          "name": "areas",
+          "label": "مجالات العمل",
+          "type": "object",
+          "fields": [
+            {
+              "name": "number",
+              "label": "الرقم",
+              "type": "number"
+            },
+            {
+              "name": "name",
+              "label": "الاسم",
+              "type": "string"
+            },
+            {
+              "name": "detail",
+              "label": "التفاصيل",
+              "type": "string"
+            }
+          ],
+          "list": true
+        },
+        {
+          "name": "posts",
+          "label": "المقالات",
+          "type": "object",
+          "fields": [
+            {
+              "name": "number",
+              "label": "الرقم",
+              "type": "number"
+            },
+            {
+              "name": "branch",
+              "label": "المجال",
+              "type": "string"
+            },
+            {
+              "name": "title",
+              "label": "العنوان",
+              "type": "string"
+            },
+            {
+              "name": "body",
+              "label": "فقرات المقال",
+              "type": "text",
+              "list": true
+            }
+          ],
+          "list": true
+        },
+        {
+          "name": "images",
+          "label": "الصور",
+          "type": "object",
+          "fields": [
+            {
+              "name": "logo",
+              "label": "الشعار",
+              "type": "image"
+            },
+            {
+              "name": "hero",
+              "label": "صورة الواجهة",
+              "type": "image"
+            },
+            {
+              "name": "legal",
+              "label": "صورة العدالة",
+              "type": "image"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
