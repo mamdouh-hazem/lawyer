@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@800&display=swap" rel="stylesheet"/>
 <title>المحامي ممدوح حازم | للمحاماة والاستشارات القانونية</title>
 <meta name="description" content="موقع المحامي ممدوح حازم للمحاماة والاستشارات القانونية: مجالات العمل، مقالات قانونية مبسطة، وطرق التواصل."/>
 <meta property="og:type" content="website"/>
@@ -32,6 +35,7 @@ html,body,#root{margin:0;min-height:100%}body{background:var(--ds-page)}.law-sit
 @keyframes nav-in{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .site-nav .nav-links{display:flex;gap:4px;overflow-x:auto;padding:0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .site-nav .nav-links::-webkit-scrollbar{display:none}
+.site-nav .nav-mehna-word{font-family:'Cairo',sans-serif;font-weight:800}
 .site-nav .nav-links a{position:relative;flex:0 0 auto;text-decoration:none;font-size:13.5px;font-weight:700;color:#dfe6f0;padding:12px 13px 13px;min-height:44px;box-sizing:border-box;white-space:nowrap;transition:color .25s ease}
 .site-nav .nav-links a::after{content:"";position:absolute;right:12px;left:12px;bottom:5px;height:2px;border-radius:2px;background:var(--law-gold);transform:scaleX(0);transition:transform .28s ease}
 .site-nav .nav-links a:hover,.site-nav .nav-links a:active{color:var(--law-gold)}
@@ -165,7 +169,7 @@ function siteNav(route){
     +navLink('/services','الخدمات',route==='/services')
     +navLink('/articles','المقالات',route.indexOf('/articles')===0)
     +navLink('/contact','تواصل',route==='/contact')
-    +'<a href="https://mamdouh-hazem.github.io/mihna/" target="_blank" rel="noopener">منصة مهنة ⚖️</a>';
+    +'<a href="https://mamdouh-hazem.github.io/mihna/" target="_blank" rel="noopener">منصة <span class="nav-mehna-word">مهنة</span></a>';
   return '<nav class="site-nav" aria-label="صفحات الموقع">'
     +'<div class="nav-bar"><span class="nav-bar-title">القائمة</span>'
     +'<button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-panel" aria-label="فتح القائمة"><span></span><span></span><span></span></button></div>'
