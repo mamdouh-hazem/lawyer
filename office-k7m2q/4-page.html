@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>مكتبي</title>
+<style>:root{--navy:#0f2a4a;--gold:#c9a24b;--bg:#f4f6fa;--card:#fff;--tx:#1b2430;--mut:#6b7686;--bd:#dde3ec;--red:#b3261e;--grn:#1e7a46}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic","Noto Sans Arabic",Arial,sans-serif;font-size:16px;line-height:1.6}
+header{background:var(--navy);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5}
+header h1{font-size:18px;margin:0;flex:1}
+header h1 span{color:var(--gold)}
+header button{background:transparent;border:1px solid #ffffff55;color:#fff;border-radius:8px;padding:6px 10px;font:inherit;font-size:14px;cursor:pointer}
+main{max-width:980px;margin:0 auto;padding:14px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{flex:1 1 140px;padding:10px;border-radius:10px;border:1px solid var(--bd);background:#fff;font:inherit;cursor:pointer}
+.tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.tc{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px;cursor:pointer;border-inline-start:4px solid var(--gold)}
+.tc b{display:block;color:var(--navy)}
+.tc small{color:var(--mut)}
+.tc.ai{opacity:.6;border-inline-start-color:#999}
+.box{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
+.box h3{margin:0 0 8px;color:var(--navy);font-size:17px}
+label{display:block;font-size:14px;color:var(--mut);margin:8px 0 2px}
+input,select,textarea{width:100%;padding:9px;border:1px solid var(--bd);border-radius:8px;font:inherit;background:#fff;color:var(--tx)}
+textarea{min-height:90px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+button.b{background:var(--navy);color:#fff;border:0;border-radius:8px;padding:9px 14px;font:inherit;cursor:pointer;margin:8px 4px 0 0}
+button.b.g{background:var(--gold);color:#111}
+button.b.r{background:var(--red)}
+button.b.o{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+button.b.s{padding:4px 9px;font-size:13px;margin:0}
+.res{background:#eef3fb;border-radius:10px;padding:10px;margin-top:10px}
+.res .k{color:var(--mut);font-size:14px}
+.res .v{font-weight:700;color:var(--navy);font-size:18px}
+.warn{background:#fff6dd;border:1px solid #e8d08a;border-radius:10px;padding:8px 10px;font-size:14px;margin:8px 0}
+.note{color:var(--mut);font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-bottom:1px solid var(--bd);padding:6px;text-align:start;vertical-align:top}
+th{background:#f0f3f8}
+.tw{overflow-x:auto}
+td input,td select{padding:5px;min-width:80px}
+.over{color:var(--red);font-weight:700}
+.ok{color:var(--grn)}
+.doc{background:#fff;border:1px solid var(--bd);padding:18px;border-radius:8px;margin-top:10px;line-height:1.9}
+.doc h2{text-align:center;color:#000}
+.back{margin-bottom:10px}
+#lock{position:fixed;inset:0;background:var(--navy);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
+#lock .box{max-width:340px;width:100%}
+#printArea{display:none}
+@media print{body>*:not(#printArea){display:none!important}#printArea{display:block!important;padding:0;font-size:14pt;color:#000;background:#fff}#printArea table{font-size:12pt}}
+@media(min-width:760px){.pin{position:sticky;top:52px;z-index:4}}.pin{border-color:var(--gold)}
+</style>
+</head><body>
+<header><h1>⚖️ مكتبي <span>| أدوات خاصة</span></h1><button id="bkp">نسخة احتياطية</button><button id="lk">قفل</button></header>
+<main id="app"></main>
+<div id="printArea"></div>
+<div id="lock" style="display:none"></div>
+<script>/* core helpers: storage, forms, export. No secrets. Data stays in this browser only. */
+const $=(s,e)=>(e||document).querySelector(s);
+const $$=(s,e)=>[...(e||document).querySelectorAll(s)];
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let D={};
+try{D=JSON.parse(localStorage.getItem('mo_v1'))||{}}catch(e){D={}}
+function save(){localStorage.setItem('mo_v1',JSON.stringify(D))}
+function col(n){D[n]=D[n]||[];return D[n]}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function money(n){n=Number(n)||0;return n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2})}
+function today(){const d=new Date();return iso(d)}
+function iso(d){const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())}
+function pd(s){if(!s)return null;const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)}
+function fd(s){if(!s)return '';const [y,m,d]=s.split('-');return d+'/'+m+'/'+y}
+function addDays(s,n){const d=pd(s);d.setDate(d.getDate()+n);return iso(d)}
+function addMonths(s,n){const d=pd(s);const day=d.getDate();d.setDate(1);d.setMonth(d.getMonth()+n);const last=new Date(d.getFullYear(),d.getMonth()+1,0).getDate();d.setDate(Math.min(day,last));return iso(d)}
+function diffDays(a,b){return Math.round((pd(b)-pd(a))/864e5)}
+const DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+function dayName(s){return DAYS[pd(s).getDay()]}
+/* form fields */
+function F(id,label,o){o=o||{};const t=o.type||'text';let inp;
+ if(t==='select')inp=`<select id="${id}">${o.opts.map(x=>{const v=Array.isArray(x)?x[0]:x,l=Array.isArray(x)?x[1]:x;return `<option value="${esc(v)}"${v==o.val?' selected':''}>${esc(l)}</option>`}).join('')}</select>`;
+ else if(t==='textarea')inp=`<textarea id="${id}" placeholder="${esc(o.ph||'')}">${esc(o.val||'')}</textarea>`;
+ else inp=`<input id="${id}" type="${t}" value="${esc(o.val==null?'':o.val)}" placeholder="${esc(o.ph||'')}"${t==='number'?' step="any" inputmode="decimal"':''}>`;
+ return `<div><label for="${id}">${label}</label>${inp}</div>`}
+const v=(id,r)=>{const e=$('#'+id,r);return e?e.value.trim():''};
+const n=(id,r)=>parseFloat(v(id,r))||0;
+function RES(pairs){return '<div class="res">'+pairs.map(p=>`<div><span class="k">${p[0]}</span><br><span class="v">${p[1]}</span></div>`).join('')+'</div>'}
+function on(root,sel,ev,fn){$$(sel,root).forEach(e=>e.addEventListener(ev,fn))}
+/* downloads */
+function dl(name,data,mime){const b=new Blob([data],{type:mime});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)}
+function csv(name,rows){const q=x=>'"'+String(x==null?'':x).replace(/"/g,'""')+'"';dl(name+'.csv','\ufeff'+rows.map(r=>r.map(q).join(',')).join('\r\n'),'text/csv;charset=utf-8')}
+function wordDoc(name,html){dl(name+'.doc','<html xmlns:w="urn:schemas-microsoft-com:office:word"><head><meta charset="utf-8"><style>body{font-family:Arial;direction:rtl;font-size:14pt}table{border-collapse:collapse;width:100%}td,th{border:1px solid #444;padding:4px}</style></head><body dir="rtl">'+html+'</body></html>','application/msword')}
+function printHtml(html){$('#printArea').innerHTML=html;window.print()}
+/* document preview with Word / print buttons */
+function docOut(el,name,html){el.innerHTML=`<div class="doc" id="dc">${html}</div><button class="b" data-a="w">تحميل Word</button><button class="b o" data-a="p">طباعة / PDF</button><button class="b o" data-a="c">نسخ النص</button>`;
+ on(el,'[data-a=w]','click',()=>wordDoc(name,html));on(el,'[data-a=p]','click',()=>printHtml(html));
+ on(el,'[data-a=c]','click',()=>{const t=$('#dc',el).innerText;navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>toast('تم النسخ'))})}
+function toast(m){let t=$('#toast');if(!t){t=document.createElement('div');t.id='toast';t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#222;color:#fff;padding:8px 16px;border-radius:20px;z-index:99';document.body.appendChild(t)}t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',1800)}
+function phoneIntl(p){p=String(p||'').replace(/\D/g,'');if(!p)return '';if(p.startsWith('00'))p=p.slice(2);else if(p.startsWith('0'))p='20'+p.slice(1);return p}
+function waLink(text,phone){return 'https://wa.me/'+phoneIntl(phone)+'?text='+encodeURIComponent(text)}
+function ics(name,events){const z=s=>s.replace(/-/g,'');const L=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//office//AR'];events.forEach(e=>{L.push('BEGIN:VEVENT','UID:'+uid()+'@office','DTSTAMP:'+new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z','SUMMARY:'+String(e.title).replace(/[\n,;]/g,' '));
+ if(e.time){const t=e.time.replace(':','')+'00';L.push('DTSTART:'+z(e.date)+'T'+t)}else L.push('DTSTART;VALUE=DATE:'+z(e.date));
+ L.push('BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:تذكير','TRIGGER:-PT'+(e.alarmMin||720)+'M','END:VALARM','END:VEVENT')});L.push('END:VCALENDAR');dl(name+'.ics',L.join('\r\n'),'text/calendar')}
+/* editable rule tables with rule date, source, verification flag */
+function ruleTable(root,key,title,cols,defaults,hint){
+ D.tables=D.tables||{};if(!D.tables[key])D.tables[key]={rows:JSON.parse(JSON.stringify(defaults)),ruleDate:'',source:'',verified:false};
+ const T=D.tables[key];
+ function draw(){root.innerHTML=`<div class="box"><h3>${title}</h3>
+ ${T.verified?'<div class="note ok">✔ تم التحقق منها</div>':'<div class="warn">⚠ أرقام مؤقتة (placeholder). لا تعتمد عليها قبل أن تدخل الأرقام الفعلية وتراجعها. اكتب تاريخ سريان القاعدة والمصدر ثم علّم «تم التحقق».</div>'}
+ ${hint?`<div class="note">${hint}</div>`:''}
+ <div class="row">${F('rt_d_'+key,'تاريخ سريان القاعدة',{type:'date',val:T.ruleDate})}${F('rt_s_'+key,'المصدر (قانون/قرار/موقع)',{val:T.source})}
+ <div><label>تم التحقق منها؟</label><select id="rt_v_${key}"><option value="0"${!T.verified?' selected':''}>لا</option><option value="1"${T.verified?' selected':''}>نعم</option></select></div></div>
+ <div class="tw"><table><tr>${cols.map(c=>`<th>${c.l}</th>`).join('')}<th></th></tr>${T.rows.map((r,i)=>`<tr>${cols.map(c=>`<td><input data-i="${i}" data-k="${c.k}" type="${c.t||'text'}" step="any" value="${esc(r[c.k]==null?'':r[c.k])}"></td>`).join('')}<td><button class="b r s" data-del="${i}">حذف</button></td></tr>`).join('')}</table></div>
+ <button class="b o" data-add="1">+ صف</button></div>`;
+ on(root,'input[data-k]','change',e=>{const i=+e.target.dataset.i,k=e.target.dataset.k,c=cols.find(c=>c.k===k);T.rows[i][k]=c.t==='number'?(parseFloat(e.target.value)||0):e.target.value;save()});
+ on(root,'[data-del]','click',e=>{T.rows.splice(+e.target.dataset.del,1);save();draw();T.onchange&&0});
+ on(root,'[data-add]','click',()=>{const r={};cols.forEach(c=>r[c.k]=c.t==='number'?0:'');T.rows.push(r);save();draw()});
+ $('#rt_d_'+key,root).onchange=e=>{T.ruleDate=e.target.value;save()};
+ $('#rt_s_'+key,root).onchange=e=>{T.source=e.target.value;save()};
+ $('#rt_v_'+key,root).onchange=e=>{T.verified=e.target.value==='1';save();draw()}}
+ draw();return T}
+function ruleBanner(T){return T.verified?`<div class="note ok">القاعدة: ${esc(T.source)} — سارية من ${fd(T.ruleDate)} ✔ تم التحقق</div>`:'<div class="warn">⚠ الجدول المستخدم لم يُتحقق منه بعد (أرقام مؤقتة). النتيجة تقديرية.</div>'}
+function getTable(key,defaults){D.tables=D.tables||{};if(!D.tables[key])D.tables[key]={rows:JSON.parse(JSON.stringify(defaults)),ruleDate:'',source:'',verified:false};return D.tables[key]}
+/* generic record list (add/delete) */
+function listTable(root,rows,cols,delFn,extra){root.innerHTML=rows.length?`<div class="tw"><table><tr>${cols.map(c=>`<th>${c.l}</th>`).join('')}<th></th></tr>${rows.map(r=>`<tr>${cols.map(c=>`<td>${c.f?c.f(r):esc(r[c.k])}</td>`).join('')}<td>${extra?extra(r):''}<button class="b r s" data-del="${r.id}">حذف</button></td></tr>`).join('')}</table></div>`:'<div class="note">لا توجد سجلات.</div>';
+ on(root,'[data-del]','click',e=>{if(confirm('حذف السجل؟')){delFn(e.target.dataset.del)}})}
+const TOOLS=[];
+function tool(id,r,t,d,f,ai){TOOLS.push({id,r,t,d,f,ai})}
+
+/* Robot A: legal accountant */
+tool('a1','a','حاسبة الأتعاب','مبلغ مقطوع أو نسبة أو بالجلسة، مع خصم وأقساط والمتبقي.',el=>{
+ el.innerHTML=`<div class="box">${F('t','نوع الأتعاب',{type:'select',opts:[['fix','مبلغ مقطوع'],['pct','نسبة من قيمة القضية'],['ses','بالجلسة']]})}
+ <div class="row" id="fx">${F('amt','المبلغ',{type:'number'})}${F('cv','قيمة القضية',{type:'number'})}${F('pc','النسبة %',{type:'number'})}${F('sn','عدد الجلسات',{type:'number'})}${F('sr','أتعاب الجلسة',{type:'number'})}
+ ${F('ds','خصم %',{type:'number',val:0})}${F('pd','المدفوع',{type:'number',val:0})}${F('in','عدد الأقساط للمتبقي',{type:'number',val:1})}</div><button class="b" id="go">احسب</button><div id="o"></div></div>`;
+ const vis=()=>{const t=v('t');$('#amt',el).parentNode.style.display=t==='fix'?'':'none';['cv','pc'].forEach(i=>$('#'+i,el).parentNode.style.display=t==='pct'?'':'none');['sn','sr'].forEach(i=>$('#'+i,el).parentNode.style.display=t==='ses'?'':'none')};$('#t',el).onchange=vis;vis();
+ $('#go',el).onclick=()=>{const t=v('t');let g=t==='fix'?n('amt'):t==='pct'?n('cv')*n('pc')/100:n('sn')*n('sr');const d=g*n('ds')/100,tot=g-d,rem=tot-n('pd'),k=Math.max(1,n('in'));
+ $('#o',el).innerHTML=RES([['الإجمالي قبل الخصم',money(g)],['الخصم',money(d)],['الصافي',money(tot)],['المدفوع',money(n('pd'))],['المتبقي',money(rem)],['قسط كل شهر ('+k+')',money(rem/k)]])}});
+tool('a2','a','عقد أتعاب وجدول سداد','يولّد عقد اتفاق أتعاب مع جدول الأقساط (Word/PDF).',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('cn','اسم الموكل',{ph:'[اسم الموكل]'})}${F('ci','الرقم القومي (اختياري)',{})}${F('cs','موضوع القضية/المهمة',{ph:'[موضوع]'})}${F('tt','إجمالي الأتعاب',{type:'number'})}${F('dp','مقدم الأتعاب',{type:'number',val:0})}${F('kn','عدد الأقساط',{type:'number',val:3})}${F('fd','تاريخ أول قسط',{type:'date',val:today()})}${F('iv','كل كم شهر',{type:'number',val:1})}</div><div class="warn">النص مسودة عامة. راجعه وعدّله قبل التوقيع.</div><button class="b" id="go">إنشاء</button><div id="o"></div></div>`;
+ $('#go',el).onclick=()=>{const k=Math.max(1,n('kn')),rem=n('tt')-n('dp'),q=rem/k;let rows='';for(let i=0;i<k;i++)rows+=`<tr><td>${i+1}</td><td>${fd(addMonths(v('fd'),i*Math.max(1,n('iv'))))}</td><td>${money(q)}</td></tr>`;
+ const name=v('cn')||'[اسم الموكل]';
+ docOut($('#o',el),'عقد-اتعاب',`<h2>اتفاق أتعاب محاماة</h2><p>إنه في يوم ${fd(today())} تحرر هذا الاتفاق بين:</p><p><b>أولاً:</b> الأستاذ/ ${esc(D.settings&&D.settings.lawyer||'ممدوح حازم')} المحامي (الطرف الأول).</p><p><b>ثانياً:</b> السيد/ ${esc(name)}${v('ci')?' رقم قومي '+esc(v('ci')):''} (الطرف الثاني).</p><p><b>البند الأول:</b> يوكل الطرف الثاني الطرف الأول في ${esc(v('cs')||'[موضوع القضية]')}.</p><p><b>البند الثاني:</b> اتفق الطرفان على أتعاب إجمالية قدرها ${money(n('tt'))} جنيه مصري، سُدد منها عند التوقيع ${money(n('dp'))} جنيهاً، والباقي ${money(rem)} جنيهاً يُسدد وفق الجدول التالي:</p><table><tr><th>القسط</th><th>تاريخ الاستحقاق</th><th>المبلغ</th></tr>${rows}</table><p><b>البند الثالث:</b> الأتعاب لا تشمل الرسوم والمصروفات القضائية، ويتحملها الطرف الثاني.</p><p><b>البند الرابع:</b> [شروط الإنهاء والإخطار — يكتبها المحامي].</p><p><b>البند الخامس:</b> حرر من نسختين بيد كل طرف نسخة.</p><p>الطرف الأول: ........ &nbsp;&nbsp;&nbsp;&nbsp; الطرف الثاني: ........</p>`)}});
+function invoiceTool(el,corp){
+ const cs=D.settings||{};
+ el.innerHTML=`<div class="box"><div class="row">${F('ty','النوع',{type:'select',opts:[['فاتورة','فاتورة'],['إيصال استلام','إيصال استلام']]})}${F('cn',corp?'اسم الشركة العميلة':'اسم العميل')}${corp?F('tx','الرقم الضريبي للعميل'):''}${corp?F('ad','العنوان'):''}${F('dt','التاريخ',{type:'date',val:today()})}${F('vt','ضريبة % (إن وجدت)',{type:'number',val:0})}${F('pdv','المدفوع',{type:'number',val:0})}</div>
+ ${F('it','البنود (كل سطر: الوصف | المبلغ)',{type:'textarea',ph:'أتعاب قضية رقم ... | 5000'})}<div class="warn">هذه مستند داخلي وليس فاتورة إلكترونية معتمدة من مصلحة الضرائب.</div><button class="b" id="go">إنشاء وحفظ</button><div id="o"></div></div><div class="box"><h3>السجل</h3><div id="ls"></div></div>`;
+ const draw=()=>listTable($('#ls',el),col('invoices').filter(x=>!!x.corp===!!corp).slice().reverse(),[{l:'رقم',k:'no'},{l:'عميل',k:'cl'},{l:'نوع',k:'ty'},{l:'تاريخ',f:r=>fd(r.dt)},{l:'إجمالي',f:r=>money(r.tot)},{l:'متبقي',f:r=>money(r.tot-r.paid)}],id=>{D.invoices=D.invoices.filter(x=>x.id!==id);save();draw()},r=>`<button class="b o s" data-pay="${r.id}">تسديد</button> `);
+ draw();on($('#ls',el),'[data-pay]','click',e=>{const r=D.invoices.find(x=>x.id===e.target.dataset.pay);const a=parseFloat(prompt('مبلغ مدفوع جديد',r.tot-r.paid));if(a){r.paid+=a;save();draw()}});
+ $('#go',el).onclick=()=>{const items=v('it').split('\n').map(l=>l.split('|')).filter(a=>a[0].trim()).map(a=>({d:a[0].trim(),m:parseFloat(a[1])||0}));const sub=items.reduce((s,x)=>s+x.m,0),tx=sub*n('vt')/100,tot=sub+tx;
+ const no=(corp?'C-':'A-')+String((col('invoices').filter(x=>!!x.corp===!!corp).length)+1).padStart(4,'0');
+ D.invoices.push({id:uid(),no,cl:v('cn'),ty:v('ty'),dt:v('dt'),tot,paid:n('pdv'),corp:!!corp,tx:v('tx')});save();draw();
+ docOut($('#o',el),no,`<h2>${esc(v('ty'))} رقم ${no}</h2><p>التاريخ: ${fd(v('dt'))}<br>إلى: ${esc(v('cn'))}${corp?'<br>الرقم الضريبي: '+esc(v('tx'))+'<br>العنوان: '+esc(v('ad')):''}</p><table><tr><th>البيان</th><th>المبلغ</th></tr>${items.map(x=>`<tr><td>${esc(x.d)}</td><td>${money(x.m)}</td></tr>`).join('')}<tr><td>الإجمالي قبل الضريبة</td><td>${money(sub)}</td></tr><tr><td>ضريبة ${n('vt')}%</td><td>${money(tx)}</td></tr><tr><td><b>الإجمالي</b></td><td><b>${money(tot)}</b></td></tr><tr><td>المدفوع</td><td>${money(n('pdv'))}</td></tr><tr><td>المتبقي</td><td>${money(tot-n('pdv'))}</td></tr></table><p>${esc(D.settings&&D.settings.lawyer||'ممدوح حازم')} - محام</p>`)}}
+tool('a3','a','فواتير وإيصالات','فاتورة أو إيصال استلام بترقيم تلقائي، PDF من الطباعة.',el=>invoiceTool(el,false));
+tool('a4','a','مصروفات القضايا','رسوم وخبراء وانتقالات لكل قضية، إجمالي كل قضية.',el=>{
+ const cats=['رسوم قضائية','خبير','انتقالات','صور وتصوير','إعلان','أخرى'];
+ el.innerHTML=`<div class="box"><div class="row">${F('cs','القضية')}${F('dt','التاريخ',{type:'date',val:today()})}${F('ct','النوع',{type:'select',opts:cats})}${F('am','المبلغ',{type:'number'})}${F('nt','ملاحظة')}</div><button class="b" id="ad">إضافة</button><button class="b o" id="cv">تصدير Excel/CSV</button></div><div class="box"><h3>الإجمالي لكل قضية</h3><div id="sm"></div></div><div class="box"><div id="ls"></div></div>`;
+ const draw=()=>{const r=col('expenses');const m={};r.forEach(x=>m[x.cs]=(m[x.cs]||0)+x.am);$('#sm',el).innerHTML=Object.keys(m).map(k=>`<div>${esc(k)}: <b>${money(m[k])}</b></div>`).join('')||'<span class="note">لا شيء</span>';
+ listTable($('#ls',el),r.slice().reverse(),[{l:'قضية',k:'cs'},{l:'تاريخ',f:x=>fd(x.dt)},{l:'نوع',k:'ct'},{l:'مبلغ',f:x=>money(x.am)},{l:'ملاحظة',k:'nt'}],id=>{D.expenses=D.expenses.filter(x=>x.id!==id);save();draw()})};draw();
+ $('#ad',el).onclick=()=>{if(!v('cs')||!n('am'))return toast('اكتب القضية والمبلغ');col('expenses').push({id:uid(),cs:v('cs'),dt:v('dt'),ct:v('ct'),am:n('am'),nt:v('nt')});save();draw()};
+ $('#cv',el).onclick=()=>csv('case-expenses',[['قضية','تاريخ','نوع','مبلغ','ملاحظة']].concat(col('expenses').map(x=>[x.cs,x.dt,x.ct,x.am,x.nt])))});
+tool('a5','a','دفتر الدخل والمصروف','قيود المكتب وملخص شهري.',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('ty','النوع',{type:'select',opts:[['in','دخل'],['out','مصروف']]})}${F('dt','التاريخ',{type:'date',val:today()})}${F('am','المبلغ',{type:'number'})}${F('ds','البيان')}${F('mo','عرض شهر',{type:'month',val:today().slice(0,7)})}</div><button class="b" id="ad">إضافة</button><button class="b o" id="cv">تصدير CSV</button><div id="sm"></div></div><div class="box"><div id="ls"></div></div>`;
+ const draw=()=>{const m=v('mo');const r=col('ledger').filter(x=>!m||x.dt.startsWith(m));const i=r.filter(x=>x.ty==='in').reduce((s,x)=>s+x.am,0),o=r.filter(x=>x.ty==='out').reduce((s,x)=>s+x.am,0);
+ $('#sm',el).innerHTML=RES([['دخل الشهر',money(i)],['مصروف الشهر',money(o)],['الصافي',money(i-o)]]);
+ listTable($('#ls',el),r.slice().sort((a,b)=>b.dt.localeCompare(a.dt)),[{l:'تاريخ',f:x=>fd(x.dt)},{l:'نوع',f:x=>x.ty==='in'?'دخل':'مصروف'},{l:'مبلغ',f:x=>money(x.am)},{l:'بيان',k:'ds'}],id=>{D.ledger=D.ledger.filter(x=>x.id!==id);save();draw()})};draw();
+ $('#mo',el).onchange=draw;
+ $('#ad',el).onclick=()=>{if(!n('am'))return toast('اكتب المبلغ');col('ledger').push({id:uid(),ty:v('ty'),dt:v('dt'),am:n('am'),ds:v('ds')});save();draw()};
+ $('#cv',el).onclick=()=>csv('ledger',[['تاريخ','نوع','مبلغ','بيان']].concat(col('ledger').map(x=>[x.dt,x.ty,x.am,x.ds])))});
+const COURT_COLS=[{k:'nm',l:'نوع الدعوى/الإجراء'},{k:'fx',l:'مبلغ ثابت',t:'number'},{k:'pc',l:'نسبة % من القيمة',t:'number'},{k:'mn',l:'حد أدنى',t:'number'},{k:'mx',l:'حد أقصى (0 = بلا)',t:'number'}];
+const COURT_DEF=[{nm:'[مثال: دعوى مدنية]',fx:0,pc:0,mn:0,mx:0},{nm:'[مثال: استئناف]',fx:0,pc:0,mn:0,mx:0}];
+tool('a6','a','تقدير رسوم المحكمة','يحسب من جدول رسوم تدخله أنت (مع تاريخ ومصدر).',el=>{
+ el.innerHTML='<div id="est" class="box"></div><div id="tb"></div>';
+ const T=getTable('court',COURT_DEF);
+ const draw=()=>{$('#est',el).innerHTML=`<h3>التقدير</h3>${F('sel','النوع',{type:'select',opts:T.rows.map((r,i)=>[i,r.nm])})}${F('cv','قيمة الدعوى',{type:'number'})}<button class="b" id="go">قدّر</button><div id="o"></div>`;
+ $('#go',el).onclick=()=>{const r=T.rows[+v('sel')];if(!r)return;let f=r.fx+n('cv')*r.pc/100;if(f<r.mn)f=r.mn;if(r.mx&&f>r.mx)f=r.mx;$('#o',el).innerHTML=RES([['الرسم التقديري',money(f)]])+ruleBanner(T)}};
+ draw();const tb=$('#tb',el);ruleTable(tb,'court','جدول رسوم المحكمة',COURT_COLS,COURT_DEF,'أدخل الرسوم الفعلية من القانون/الجداول الرسمية الحالية. لم يُدخل التطبيق أي رقم.');
+ tb.addEventListener('change',()=>setTimeout(draw,50))});
+tool('a7','a','دليل الضرائب للمحامي','قائمة التزامات + حاسبة شرائح تدخل أنت أرقامها.',el=>{
+ const BR=[{fr:0,to:0,rt:0},{fr:0,to:0,rt:0}];
+ el.innerHTML=`<div class="box"><h3>قائمة التزامات (راجع كل بند وحدّثه)</h3><ul><li>البطاقة الضريبية سارية؟ (تاريخ التجديد: ....)</li><li>الإقرار الضريبي السنوي: الموعد ..... (تأكد من الموعد الحالي)</li><li>حد التسجيل في ضريبة القيمة المضافة: ..... (تأكد من الرقم الحالي)</li><li>ضريبة الدمغة/النقابة والاشتراكات: .....</li><li>حفظ المستندات والإيصالات للخصم: .....</li></ul><div class="warn">هذه عناوين فقط. لم يتم إدراج أرقام أو نسب. ادخلها من المصدر الرسمي أو محاسبك.</div></div><div class="box" id="calc"></div><div id="tb"></div>`;
+ const T=getTable('tax',BR);
+ const draw=()=>{$('#calc',el).innerHTML=`<h3>حاسبة الشرائح</h3>${F('nt','صافي الدخل السنوي',{type:'number'})}<button class="b" id="go">احسب</button><div id="o"></div>`;
+ $('#go',el).onclick=()=>{let x=n('nt'),tax=0;T.rows.slice().sort((a,b)=>a.fr-b.fr).forEach(r=>{const hi=r.to>0?Math.min(x,r.to):x;if(hi>r.fr)tax+=(hi-r.fr)*r.rt/100});$('#o',el).innerHTML=RES([['الضريبة التقديرية',money(tax)]])+ruleBanner(T)}};
+ draw();ruleTable($('#tb',el),'tax','شرائح الضريبة (من / إلى / نسبة)',[{k:'fr',l:'من',t:'number'},{k:'to',l:'إلى (0 = بلا حد)',t:'number'},{k:'rt',l:'النسبة %',t:'number'}],BR,'الشريحة تُحسب على الجزء الواقع بين «من» و«إلى».');
+ $('#tb',el).addEventListener('change',()=>setTimeout(draw,50))});
+tool('a8','a','حاسبة المواعيد والفوائد','نهاية ميعاد (أيام/شهور) وفائدة بسيطة.',el=>{
+ const DEF=[{nm:'[ميعاد الطعن — اكتب النوع]',dy:0},{nm:'[ميعاد آخر]',dy:0}];
+ const T=getTable('deadlines',DEF);
+ el.innerHTML=`<div class="box"><h3>نهاية ميعاد</h3><div class="row">${F('st','تاريخ البداية',{type:'date',val:today()})}${F('dn','أيام',{type:'number'})}${F('mn','شهور',{type:'number'})}${F('pre','ميعاد محفوظ',{type:'select',opts:[['','— اختر —']].concat(T.rows.map((r,i)=>[i,r.nm+' ('+r.dy+' يوم)']))})}</div><button class="b" id="go">احسب</button><div id="o"></div><div class="note">الحساب تقويمي بسيط. لا يراعي العطلات ولا قواعد بدء الميعاد. تحقق قانونياً من بداية الميعاد وعطلاته.</div></div>
+ <div class="box"><h3>فائدة بسيطة</h3><div class="row">${F('pr','المبلغ',{type:'number'})}${F('rt','النسبة السنوية %',{type:'number'})}${F('f1','من',{type:'date',val:today()})}${F('f2','إلى',{type:'date',val:today()})}</div><button class="b" id="g2">احسب</button><div id="o2"></div></div><div id="tb"></div>`;
+ $('#pre',el).onchange=()=>{if(v('pre')!=='')$('#dn',el).value=T.rows[+v('pre')].dy};
+ $('#go',el).onclick=()=>{let e=addDays(addMonths(v('st'),n('mn')),n('dn'));$('#o',el).innerHTML=RES([['تاريخ النهاية',fd(e)+' ('+dayName(e)+')'],['المتبقي من اليوم',diffDays(today(),e)+' يوم']])+(['الجمعة','السبت'].includes(dayName(e))?'<div class="warn">النهاية توافق عطلة. تحقق من الامتداد القانوني.</div>':'')};
+ $('#g2',el).onclick=()=>{const d=diffDays(v('f1'),v('f2'));$('#o2',el).innerHTML=RES([['عدد الأيام',d],['الفائدة',money(n('pr')*n('rt')/100*d/365)],['الإجمالي',money(n('pr')+n('pr')*n('rt')/100*d/365)]])};
+ ruleTable($('#tb',el),'deadlines','مواعيد قانونية محفوظة',[{k:'nm',l:'الميعاد'},{k:'dy',l:'أيام',t:'number'}],DEF,'أدخل المواعيد من القانون الحالي. بلا أرقام جاهزة.')});
+function collectionsTool(el,corp){
+ el.innerHTML=`<div class="box"><div id="ls"></div><div class="note">يعتمد على الفواتير${corp?' وجدول الأتعاب الشهرية':''} المسجلة. الرسالة تُفتح في واتساب وتضغط إرسال بنفسك.</div></div><div id="o"></div>`;
+ const rows=[];col('invoices').filter(x=>!!x.corp===!!corp&&x.tot-x.paid>0).forEach(x=>rows.push({id:x.id,cl:x.cl,amt:x.tot-x.paid,dt:x.dt,ref:x.no}));
+ if(corp)col('retainers').forEach(r=>{const due=retDue(r);if(due.amt>0)rows.push({id:r.id,cl:r.cl,amt:due.amt,dt:due.since,ref:'أتعاب شهرية'})});
+ $('#ls',el).innerHTML=rows.length?`<div class="tw"><table><tr><th>العميل</th><th>المتبقي</th><th>منذ</th><th>تأخير</th><th></th></tr>${rows.map(r=>`<tr><td>${esc(r.cl)}</td><td>${money(r.amt)}</td><td>${fd(r.dt)}</td><td class="${diffDays(r.dt,today())>0?'over':''}">${Math.max(0,diffDays(r.dt,today()))} يوم</td><td><button class="b s" data-m="${r.id}">رسالة</button></td></tr>`).join('')}</table></div>`:'لا متأخرات مسجلة.';
+ on(el,'[data-m]','click',e=>{const r=rows.find(x=>x.id===e.target.dataset.m);const t=`السلام عليكم أستاذ/ ${r.cl}،\nتذكير ودي بوجود مبلغ ${money(r.amt)} جنيه مستحق (${r.ref}). برجاء التكرم بالسداد في أقرب وقت. شكراً لتعاونكم.\n${D.settings&&D.settings.lawyer||'ممدوح حازم'}`;
+ $('#o',el).innerHTML=`<div class="box"><div class="doc" style="white-space:pre-wrap">${esc(t)}</div><div class="row">${F('ph','رقم واتساب العميل')}</div><button class="b g" id="wa">فتح واتساب</button></div>`;$('#wa',el).onclick=()=>window.open(waLink(t,v('ph')),'_blank')})}
+function retDue(r){const months=Math.max(0,Math.floor(diffDays(r.start,today())/30.4)+1);const due=months*r.fee,paid=(r.pays||[]).reduce((s,p)=>s+p.a,0);return {amt:due-paid,since:addMonths(r.start,Math.max(0,Math.floor((paid)/r.fee)))}}
+tool('a9','a','متابعة المتأخرات','قائمة المتأخر وصياغة رسالة تذكير جاهزة لواتساب.',el=>collectionsTool(el,false));
+tool('a10','a','سؤال وجواب محاسبي بالذكاء الاصطناعي','يأتي في آخر مرحلة بعد قرارك وحسابك. غير مفعل الآن.',el=>{el.innerHTML='<div class="warn">غير مفعل بعد. يحتاج قرارك بشأن حساب مجاني وحدوده.</div>'},true);
+
+/* Robot S: office secretary */
+const CASE_TYPES=['جنائي','أحوال شخصية','مدني','عقاري','عمالي','تجاري وشركات','أخرى'];
+const LAWYER=()=>D.settings&&D.settings.lawyer||'ممدوح حازم';
+function docsList(t){D.docs=D.docs||{};if(!D.docs[t])D.docs[t]=['صورة بطاقة الرقم القومي للموكل','التوكيل أو مستند الصفة','أي مستندات أو عقود متعلقة بالموضوع','أي إعلانات أو أوراق قضائية وصلت للموكل','رقم القضية وجهة النظر إن وجدت'];return D.docs[t]}
+tool('s1','s','استقبال موكل جديد','نموذج بيانات الموكل وملخص جاهز، وحفظ في قائمة الموكلين.',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('nm','الاسم')}${F('ph','الموبايل (واتساب)')}${F('ty','نوع القضية',{type:'select',opts:CASE_TYPES})}${F('op','الخصم (إن وجد)')}${F('ur','الاستعجال',{type:'select',opts:['عادي','عاجل','عاجل جداً']})}${F('src','جاء عن طريق')}</div>${F('sm','ملخص المشكلة',{type:'textarea'})}<div class="warn">قلل البيانات الحساسة: لا رقم قومي ولا تفاصيل أسرار هنا إلا للضرورة. تُحفظ في متصفحك فقط.</div><button class="b" id="go">إنشاء الملخص وحفظ</button><div id="o"></div></div><div class="box"><h3>الموكلون المحفوظون</h3><div id="ls"></div></div>`;
+ const draw=()=>listTable($('#ls',el),col('clients').slice().reverse(),[{l:'الاسم',k:'nm'},{l:'النوع',k:'ty'},{l:'تاريخ',f:r=>fd(r.dt)},{l:'موبايل',k:'ph'}],id=>{D.clients=D.clients.filter(x=>x.id!==id);save();draw()});draw();
+ $('#go',el).onclick=()=>{if(!v('nm'))return toast('اكتب الاسم');col('clients').push({id:uid(),nm:v('nm'),ph:v('ph'),ty:v('ty'),dt:today()});save();draw();
+ const t=`ملخص استقبال - ${fd(today())}\nالموكل: ${v('nm')}\nالموبايل: ${v('ph')}\nنوع القضية: ${v('ty')}\nالخصم: ${v('op')||'-'}\nالاستعجال: ${v('ur')}\nمصدر الوصول: ${v('src')||'-'}\nالملخص: ${v('sm')}\n\nالمستندات المطلوبة:\n`+docsList(v('ty')).map((x,i)=>(i+1)+'. '+x).join('\n');
+ const msg=`السلام عليكم أستاذ/ ${v('nm')}،\nشكراً لتواصلك مع مكتب ${LAWYER()} المحامي. لنبدأ دراسة موضوعك برجاء إرسال المستندات التالية:\n`+docsList(v('ty')).map((x,i)=>(i+1)+'. '+x).join('\n');
+ $('#o',el).innerHTML=`<div class="doc" style="white-space:pre-wrap">${esc(t)}</div><button class="b o" id="cp">نسخ الملخص</button><button class="b g" id="wa">فتح واتساب لطلب المستندات</button>`;
+ $('#cp',el).onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(t);toast('تم النسخ')};$('#wa',el).onclick=()=>window.open(waLink(msg,v('ph')),'_blank')}});
+tool('s2','s','مواعيد الموكلين','حجز موعد، كشف تعارض، رسالة تأكيد.',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('nm','الموكل')}${F('ph','الموبايل')}${F('dt','التاريخ',{type:'date',val:today()})}${F('tm','الوقت',{type:'time',val:'11:00'})}${F('tp','الموضوع')}${F('pl','المكان',{val:'المكتب'})}</div><button class="b" id="ad">حفظ الموعد</button><div id="wm"></div></div><div class="box"><h3>القادمة</h3><div id="ls"></div></div>`;
+ const draw=()=>listTable($('#ls',el),col('appts').slice().sort((a,b)=>(a.dt+a.tm).localeCompare(b.dt+b.tm)),[{l:'التاريخ',f:r=>fd(r.dt)+' '+dayName(r.dt)},{l:'الوقت',k:'tm'},{l:'الموكل',k:'nm'},{l:'الموضوع',k:'tp'}],id=>{D.appts=D.appts.filter(x=>x.id!==id);save();draw()},r=>`<button class="b g s" data-c="${r.id}">تأكيد</button> `);draw();
+ on($('#ls',el),'[data-c]','click',e=>{const r=D.appts.find(x=>x.id===e.target.dataset.c);const t=`السلام عليكم أستاذ/ ${r.nm}،\nنؤكد موعدكم مع ${LAWYER()} المحامي يوم ${dayName(r.dt)} ${fd(r.dt)} الساعة ${r.tm} في ${r.pl}. نرجو الحضور في الميعاد وإحضار المستندات. شكراً.`;window.open(waLink(t,r.ph),'_blank')});
+ $('#ad',el).onclick=()=>{if(!v('nm'))return toast('اكتب الموكل');const c=col('appts').find(a=>a.dt===v('dt')&&a.tm===v('tm'));
+ $('#wm',el).innerHTML=c?`<div class="warn">تعارض: عندك موعد ${esc(c.nm)} في نفس الوقت. تم الحفظ مع ذلك.</div>`:'';
+ col('appts').push({id:uid(),nm:v('nm'),ph:v('ph'),dt:v('dt'),tm:v('tm'),tp:v('tp'),pl:v('pl')});save();draw()}});
+tool('s3','s','يومية الجلسات والمواعيد','جلسات وميعاد طعن وأعمال، مع تصدير للتقويم لتذكير الموبايل.',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('ty','النوع',{type:'select',opts:['جلسة','ميعاد قانوني','عمل مطلوب']})}${F('cs','القضية/الموكل')}${F('ct','المحكمة/الدائرة')}${F('dt','التاريخ',{type:'date',val:today()})}${F('tm','الوقت (اختياري)',{type:'time'})}${F('nt','ملاحظة')}</div><button class="b" id="ad">إضافة</button><button class="b g" id="ic">تصدير للتقويم (.ics)</button><div class="note">افتح ملف .ics من الموبايل فيُضاف في تقويمك مع تنبيه قبلها بيوم. هذه الطريقة الوحيدة للتذكير التلقائي.</div></div><div class="box"><div id="ls"></div></div>`;
+ const draw=()=>{const r=col('diary').slice().sort((a,b)=>(a.dt+(a.tm||'')).localeCompare(b.dt+(b.tm||'')));
+ listTable($('#ls',el),r,[{l:'التاريخ',f:x=>{const d=diffDays(today(),x.dt);return `<span class="${d<0?'over':d<=1?'ok':''}">${fd(x.dt)} ${dayName(x.dt)}${d===0?' (اليوم)':d===1?' (بكرة)':d<0?' (فات)':''}</span>`}},{l:'الوقت',k:'tm'},{l:'النوع',k:'ty'},{l:'القضية',k:'cs'},{l:'المحكمة',k:'ct'},{l:'ملاحظة',k:'nt'}],id=>{D.diary=D.diary.filter(x=>x.id!==id);save();draw()})};draw();
+ $('#ad',el).onclick=()=>{if(!v('cs'))return toast('اكتب القضية');col('diary').push({id:uid(),ty:v('ty'),cs:v('cs'),ct:v('ct'),dt:v('dt'),tm:v('tm'),nt:v('nt')});save();draw()};
+ $('#ic',el).onclick=()=>{const r=col('diary').filter(x=>x.dt>=today());if(!r.length)return toast('لا عناصر قادمة');ics('diary',r.map(x=>({title:x.ty+': '+x.cs+(x.ct?' - '+x.ct:''),date:x.dt,time:x.tm,alarmMin:x.tm?720:0})))}});
+tool('s4','s','قوائم المستندات لكل نوع قضية','قائمة مبدئية تعدلها، وتطبعها أو ترسلها للموكل.',el=>{
+ el.innerHTML=`<div class="box">${F('ty','نوع القضية',{type:'select',opts:CASE_TYPES})}<div class="warn">القوائم مبدئية عامة. عدّلها لتناسب خبرتك.</div><div id="ls"></div><div id="ed"></div></div>`;
+ const draw=()=>{const t=v('ty'),L=docsList(t);$('#ls',el).innerHTML=L.map(x=>`<div>☐ ${esc(x)}</div>`).join('');
+ $('#ed',el).innerHTML=F('tx','عدّل القائمة (سطر لكل بند)',{type:'textarea',val:L.join('\n')})+`<button class="b" id="sv">حفظ التعديل</button><button class="b o" id="pr">طباعة</button><button class="b o" id="cp">نسخ لرسالة</button>`;
+ $('#sv',el).onclick=()=>{D.docs[t]=v('tx').split('\n').map(x=>x.trim()).filter(Boolean);save();draw()};
+ $('#pr',el).onclick=()=>printHtml(`<h2>المستندات المطلوبة - ${esc(t)}</h2>`+L.map(x=>'<p>☐ '+esc(x)+'</p>').join(''));
+ $('#cp',el).onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText('المستندات المطلوبة:\n'+L.map((x,i)=>(i+1)+'. '+x).join('\n'));toast('تم النسخ')}};
+ $('#ty',el).onchange=draw;draw()});
+const MSG_DEF=[{t:'تأكيد موعد',b:'السلام عليكم {الاسم}، نؤكد موعدكم يوم {التاريخ} الساعة {الوقت} في {المكان}.'},{t:'تذكير بجلسة',b:'السلام عليكم {الاسم}، تذكير بأن جلسة قضيتكم يوم {التاريخ} بمحكمة {المكان}. لا يلزم حضورك إلا إذا أبلغتك.'},{t:'طلب مستندات',b:'السلام عليكم {الاسم}، برجاء إرسال المستندات المطلوبة لاستكمال الملف قبل {التاريخ}.'},{t:'تذكير بسداد',b:'السلام عليكم {الاسم}، تذكير ودي بمبلغ {المبلغ} جنيه مستحق. شكراً لتعاونكم.'},{t:'اعتذار مهذب عن قضية',b:'السلام عليكم {الاسم}، شكراً لثقتكم. للأسف لا أستطيع قبول هذه القضية حالياً، وأنصحك بمراجعة محامٍ متخصص في الموضوع.'}];
+tool('s5','s','مكتبة الرسائل','قوالب رسائل واتساب بمتغيرات تملؤها وتفتحها.',el=>{
+ if(!D.msgs)D.msgs=JSON.parse(JSON.stringify(MSG_DEF));
+ el.innerHTML=`<div class="box">${F('sel','القالب',{type:'select',opts:D.msgs.map((m,i)=>[i,m.t])})}<div class="row">${F('p1','{الاسم}'.replace(/[{}]/g,''))}${F('p2','التاريخ')}${F('p3','الوقت')}${F('p4','المكان')}${F('p5','المبلغ',{type:'number'})}${F('ph','رقم الموبايل')}</div><div id="pv" class="doc" style="white-space:pre-wrap"></div><button class="b g" id="wa">فتح واتساب</button><button class="b o" id="cp">نسخ</button></div><div class="box"><h3>تعديل القوالب</h3>${F('nt','عنوان القالب')}${F('nb','النص (استخدم {الاسم} {التاريخ} {الوقت} {المكان} {المبلغ})',{type:'textarea'})}<button class="b" id="sv">إضافة قالب</button><button class="b r" id="dl">حذف القالب المختار</button></div>`;
+ const txt=()=>{const m=D.msgs[+v('sel')];return m?m.b.replace(/{الاسم}/g,v('p1')||'...').replace(/{التاريخ}/g,v('p2')||'...').replace(/{الوقت}/g,v('p3')||'...').replace(/{المكان}/g,v('p4')||'...').replace(/{المبلغ}/g,v('p5')||'...'):''};
+ const pv=()=>{$('#pv',el).textContent=txt()};$$('input,select',el).forEach(e=>e.addEventListener('input',pv));pv();
+ $('#wa',el).onclick=()=>window.open(waLink(txt(),v('ph')),'_blank');$('#cp',el).onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(txt());toast('تم النسخ')};
+ $('#sv',el).onclick=()=>{if(!v('nt')||!v('nb'))return;D.msgs.push({t:v('nt'),b:v('nb')});save();el.innerHTML='';TOOLS.find(x=>x.id==='s5').f(el)};
+ $('#dl',el).onclick=()=>{D.msgs.splice(+v('sel'),1);save();el.innerHTML='';TOOLS.find(x=>x.id==='s5').f(el)}});
+tool('s6','s','صياغة خطابات وإنذارات','هيكل إنذار/خطاب/مذكرة جاهز تملؤه (Word/PDF). مسودة تحتاج مراجعتك.',el=>{
+ el.innerHTML=`<div class="box">${F('ty','النوع',{type:'select',opts:['إنذار رسمي','خطاب رسمي','هيكل مذكرة دفاع','إقرار/تعهد']})}<div class="row">${F('fr','من (المنذر/المرسل)')}${F('to','إلى (المنذر إليه/الجهة)')}${F('sb','الموضوع')}${F('dt','التاريخ',{type:'date',val:today()})}</div>${F('fc','الوقائع (سطر لكل واقعة)',{type:'textarea'})}${F('rq','المطلوب',{type:'textarea'})}<div class="warn">النص هيكل عام فقط، والسند القانوني والمواد تضيفها أنت.</div><button class="b" id="go">إنشاء</button><div id="o"></div></div>`;
+ $('#go',el).onclick=()=>{const ty=v('ty'),fc=v('fc').split('\n').filter(Boolean).map((x,i)=>`<p>${i+1}. ${esc(x)}</p>`).join('')||'<p>[الوقائع]</p>',rq=esc(v('rq')||'[المطلوب]'),fr=esc(v('fr')||'[المرسل]'),to=esc(v('to')||'[المرسل إليه]'),sb=esc(v('sb')||'[الموضوع]'),d=fd(v('dt'));let h;
+ if(ty==='إنذار رسمي')h=`<h2>إنذار رسمي</h2><p>التاريخ: ${d}</p><p><b>المنذر:</b> ${fr}<br><b>المنذر إليه:</b> ${to}</p><p><b>الموضوع:</b> ${sb}</p><p><b>الوقائع:</b></p>${fc}<p><b>الإنذار:</b> ننذر المنذر إليه بـ ${rq} خلال [مدة] من تاريخ الإعلان، وإلا اضطر المنذر لاتخاذ الإجراءات القانونية مع حفظ كافة حقوقه [السند القانوني].</p><p>المحامي: ${esc(LAWYER())}</p>`;
+ else if(ty==='خطاب رسمي')h=`<p>التاريخ: ${d}</p><p>السيد/ ${to}</p><p>تحية طيبة وبعد،</p><p><b>الموضوع: ${sb}</b></p>${fc}<p>${rq}</p><p>وتفضلوا بقبول فائق الاحترام،</p><p>${fr}<br>${esc(LAWYER())} المحامي</p>`;
+ else if(ty==='هيكل مذكرة دفاع')h=`<h2>مذكرة بدفاع ${fr}</h2><p>ضد/ ${to}</p><p>في القضية رقم [...] لسنة [...] ، جلسة ${d}</p><p><b>أولاً: الوقائع</b></p>${fc}<p><b>ثانياً: الدفوع الشكلية</b> [...]</p><p><b>ثالثاً: الدفاع الموضوعي</b> [...]</p><p><b>رابعاً: الطلبات</b></p><p>${rq}</p><p>وكيل الطالب: ${esc(LAWYER())} المحامي</p>`;
+ else h=`<h2>إقرار وتعهد</h2><p>أقر أنا ${fr} بأنني ${sb}</p>${fc}<p>${rq}</p><p>تحريراً في ${d}</p><p>المقر بما فيه: ........</p>`;
+ docOut($('#o',el),ty,h)}});
+tool('s7','s','غلاف وفهرس ملف القضية','غلاف مطبوع وفهرس مستندات.',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('no','رقم القضية')}${F('yr','السنة')}${F('ct','المحكمة')}${F('ci','الدائرة')}${F('pl','المدعي/الموكل')}${F('df','المدعى عليه')}${F('sb','الموضوع')}${F('od','تاريخ الفتح',{type:'date',val:today()})}</div>${F('ix','الفهرس (كل سطر: المستند | عدد الصفحات)',{type:'textarea'})}<button class="b" id="go">إنشاء</button><div id="o"></div></div>`;
+ $('#go',el).onclick=()=>{const rows=v('ix').split('\n').filter(Boolean).map((l,i)=>{const a=l.split('|');return `<tr><td>${i+1}</td><td>${esc(a[0])}</td><td>${esc((a[1]||'').trim())}</td></tr>`}).join('');
+ docOut($('#o',el),'غلاف-قضية',`<h2>ملف قضية</h2><p>المحكمة: ${esc(v('ct'))} &nbsp; الدائرة: ${esc(v('ci'))}</p><p>رقم القضية: ${esc(v('no'))} لسنة ${esc(v('yr'))}</p><p>المدعي/الموكل: ${esc(v('pl'))}<br>المدعى عليه: ${esc(v('df'))}</p><p>الموضوع: ${esc(v('sb'))}</p><p>تاريخ فتح الملف: ${fd(v('od'))}</p><p>المحامي: ${esc(LAWYER())}</p><h2>فهرس المستندات</h2><table><tr><th>م</th><th>المستند</th><th>الصفحات</th></tr>${rows}</table>`)}});
+tool('s8','s','تجهيز يوم المحكمة','قائمة فحص لليوم مع جلسات اليوم من اليومية.',el=>{
+ if(!D.prepItems)D.prepItems=['التوكيل الأصلي وصورته','كارنيه النقابة','أصل الملف وصور كافية','المذكرات/الطلبات مطبوعة','إيصالات الرسوم','شحن الموبايل وأقلام','مراجعة الدائرة والقاعة'];
+ el.innerHTML=`<div class="box">${F('dt','اليوم',{type:'date',val:today()})}<div id="se"></div><div id="ck"></div>${F('ed','عدّل البنود (سطر لكل بند)',{type:'textarea',val:D.prepItems.join('\n')})}<button class="b" id="sv">حفظ البنود</button></div>`;
+ const draw=()=>{const d=v('dt');D.prep=D.prep||{};const st=D.prep[d]||{};const ss=col('diary').filter(x=>x.dt===d);
+ $('#se',el).innerHTML=`<h3>جلسات اليوم</h3>`+(ss.length?ss.map(x=>`<div>• ${esc(x.cs)} - ${esc(x.ct)} ${esc(x.tm||'')}</div>`).join(''):'<div class="note">لا جلسات مسجلة لهذا اليوم.</div>');
+ $('#ck',el).innerHTML='<h3>القائمة</h3>'+D.prepItems.map((x,i)=>`<div><label style="display:flex;gap:8px;align-items:center;color:inherit;font-size:16px"><input type="checkbox" data-k="${i}" style="width:auto"${st[i]?' checked':''}> ${esc(x)}</label></div>`).join('');
+ on($('#ck',el),'input','change',e=>{D.prep[d]=D.prep[d]||{};D.prep[d][e.target.dataset.k]=e.target.checked;save()})};
+ $('#dt',el).onchange=draw;draw();$('#sv',el).onclick=()=>{D.prepItems=v('ed').split('\n').map(x=>x.trim()).filter(Boolean);save();draw()}});
+tool('s9','s','أسئلة الزوار بالذكاء الاصطناعي','يأتي في آخر مرحلة بعد قرارك. غير مفعل الآن.',el=>{el.innerHTML='<div class="warn">غير مفعل بعد.</div>'},true);
+tool('s10','s','ملخص أسبوع المكتب','يجمع جلسات ومواعيد وحسابات الأسبوع في نص واحد.',el=>{
+ el.innerHTML=`<div class="box">${F('st','بداية الأسبوع',{type:'date',val:today()})}<button class="b" id="go">إنشاء الملخص</button><div id="o"></div></div>`;
+ $('#go',el).onclick=()=>{const a=v('st'),b=addDays(a,6),inR=x=>x.dt>=a&&x.dt<=b;
+ const di=col('diary').filter(inR).sort((x,y)=>x.dt.localeCompare(y.dt)),ap=col('appts').filter(inR).sort((x,y)=>(x.dt+x.tm).localeCompare(y.dt+y.tm));
+ const led=col('ledger').filter(inR),inc=led.filter(x=>x.ty==='in').reduce((s,x)=>s+x.am,0),out=led.filter(x=>x.ty==='out').reduce((s,x)=>s+x.am,0);
+ const od=col('invoices').filter(x=>x.tot-x.paid>0).length;
+ const t=`ملخص الأسبوع ${fd(a)} - ${fd(b)}\n\nالجلسات والمواعيد القانونية والأعمال (${di.length}):\n`+(di.map(x=>`- ${fd(x.dt)} ${x.ty}: ${x.cs} ${x.ct||''}`).join('\n')||'لا شيء')+`\n\nمواعيد الموكلين (${ap.length}):\n`+(ap.map(x=>`- ${fd(x.dt)} ${x.tm} ${x.nm}`).join('\n')||'لا شيء')+`\n\nالدخل: ${money(inc)} | المصروف: ${money(out)} | الصافي: ${money(inc-out)}\nفواتير غير مسددة بالكامل: ${od}`;
+ $('#o',el).innerHTML=`<div class="doc" style="white-space:pre-wrap">${esc(t)}</div><button class="b o" id="cp">نسخ</button>`;$('#cp',el).onclick=()=>{navigator.clipboard&&navigator.clipboard.writeText(t);toast('تم النسخ')}}});
+
+/* Robot C: corporate legal accountant */
+const FORM_DEF=[{ty:'[مثال: ذات مسؤولية محدودة]',it:'[بند: رسوم تسجيل]',am:0},{ty:'[مثال: ذات مسؤولية محدودة]',it:'[بند: توثيق]',am:0}];
+tool('c1','c','تقدير تكلفة تأسيس شركة','يجمع بنود تكلفة كل نوع شركة من جدول تدخله أنت.',el=>{
+ el.innerHTML='<div class="box" id="est"></div><div id="tb"></div>';
+ const T=getTable('formation',FORM_DEF);
+ const draw=()=>{const types=[...new Set(T.rows.map(r=>r.ty).filter(Boolean))];$('#est',el).innerHTML=`<h3>التقدير</h3>${F('ty','نوع الشركة',{type:'select',opts:types.length?types:['—']})}${F('ex','تكلفة إضافية (أتعابك مثلاً)',{type:'number',val:0})}<button class="b" id="go">احسب</button><div id="o"></div>`;
+ $('#go',el).onclick=()=>{const rs=T.rows.filter(r=>r.ty===v('ty'));const s=rs.reduce((a,r)=>a+r.am,0);$('#o',el).innerHTML=`<div class="tw"><table>${rs.map(r=>`<tr><td>${esc(r.it)}</td><td>${money(r.am)}</td></tr>`).join('')}</table></div>`+RES([['الإجمالي',money(s+n('ex'))]])+ruleBanner(T)}};
+ draw();ruleTable($('#tb',el),'formation','جدول تكلفة التأسيس',[{k:'ty',l:'نوع الشركة'},{k:'it',l:'البند'},{k:'am',l:'المبلغ',t:'number'}],FORM_DEF,'أدخل الرسوم الفعلية من الهيئة العامة للاستثمار/الجهات المختصة. لا أرقام جاهزة.');
+ $('#tb',el).addEventListener('change',()=>setTimeout(draw,50))});
+tool('c2','c','رأس المال وجدول المساهمين','توزيع الحصص والأسهم وجدول ملكية للطباعة.',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('co','اسم الشركة')}${F('cp','رأس المال',{type:'number'})}${F('nv','القيمة الاسمية للسهم/الحصة',{type:'number',val:100})}</div>${F('fd','الشركاء (سطر لكل شريك: الاسم | النسبة %)',{type:'textarea',ph:'أحمد | 60\nمحمد | 40'})}<button class="b" id="go">إنشاء</button><div id="o"></div></div>`;
+ $('#go',el).onclick=()=>{const rows=v('fd').split('\n').filter(Boolean).map(l=>{const a=l.split('|');return {nm:a[0].trim(),p:parseFloat(a[1])||0}});const tp=rows.reduce((s,r)=>s+r.p,0);const nv=n('nv')||1;
+ const w=tp!==100?`<div class="warn">مجموع النسب ${tp}% وليس 100%.</div>`:'';
+ const h=`<h2>جدول الملكية - ${esc(v('co'))}</h2><p>رأس المال: ${money(n('cp'))} جنيه</p><table><tr><th>الشريك</th><th>النسبة</th><th>المساهمة</th><th>عدد الأسهم/الحصص</th></tr>${rows.map(r=>`<tr><td>${esc(r.nm)}</td><td>${r.p}%</td><td>${money(n('cp')*r.p/100)}</td><td>${Math.round(n('cp')*r.p/100/nv*100)/100}</td></tr>`).join('')}</table>`;
+ $('#o',el).innerHTML=w;const d=document.createElement('div');$('#o',el).appendChild(d);docOut(d,'cap-table',h)}});
+tool('c3','c','مستندات الشركات','محضر جمعية، قرار شركاء/مجلس، هيكل عقد شركاء، توكيل. مسودات.',el=>{
+ el.innerHTML=`<div class="box">${F('ty','المستند',{type:'select',opts:['محضر اجتماع جمعية عمومية','قرار شركاء/مجلس إدارة','هيكل عقد شركاء','هيكل توكيل']})}<div class="row">${F('co','اسم الشركة')}${F('rg','رقم السجل التجاري')}${F('dt','التاريخ',{type:'date',val:today()})}${F('pl','المكان')}</div>${F('at','الحاضرون/الأطراف (سطر لكل اسم)',{type:'textarea'})}${F('ag','جدول الأعمال/البنود (سطر لكل بند)',{type:'textarea'})}${F('rs','القرارات/الشروط (سطر لكل بند)',{type:'textarea'})}<div class="warn">هيكل عام. النصاب والأغلبيات والمواد القانونية تضيفها بعد مراجعة نوع الشركة وعقدها.</div><button class="b" id="go">إنشاء</button><div id="o"></div></div>`;
+ const ol=s=>v(s).split('\n').filter(Boolean).map((x,i)=>`<p>${i+1}. ${esc(x)}</p>`).join('')||'<p>[...]</p>';
+ $('#go',el).onclick=()=>{const ty=v('ty'),co=esc(v('co')||'[اسم الشركة]'),head=`<p>شركة ${co} - سجل تجاري ${esc(v('rg')||'[...]')}</p>`,d=fd(v('dt')),pl=esc(v('pl')||'[المكان]');let h;
+ if(ty.startsWith('محضر'))h=`<h2>محضر اجتماع الجمعية العامة</h2>${head}<p>انعقد الاجتماع يوم ${d} بـ ${pl} بحضور:</p>${ol('at')}<p>[تحقق النصاب القانوني]</p><p><b>جدول الأعمال:</b></p>${ol('ag')}<p><b>القرارات:</b></p>${ol('rs')}<p>رُفعت الجلسة. التوقيعات: ........</p>`;
+ else if(ty.startsWith('قرار'))h=`<h2>قرار</h2>${head}<p>بتاريخ ${d} قرر الموقعون أدناه:</p>${ol('rs')}<p>التوقيعات:</p>${ol('at')}`;
+ else if(ty.startsWith('هيكل عقد'))h=`<h2>عقد شركة</h2>${head}<p>حرر في ${d} بين:</p>${ol('at')}<p><b>الغرض والنشاط:</b> [...]</p><p><b>رأس المال والحصص:</b> [...]</p><p><b>إدارة الشركة:</b> [...]</p><p><b>توزيع الأرباح والخسائر:</b> [...]</p><p><b>شروط محددة:</b></p>${ol('rs')}<p><b>التنازل عن الحصص / الخروج:</b> [...]</p><p><b>فض النزاعات:</b> [...]</p><p><b>المدة والتصفية:</b> [...]</p>`;
+ else h=`<h2>توكيل</h2><p>أنا/ ${esc(v('at').split('\n')[0]||'[الموكل]')} بصفتي ${co} أوكل [اسم الوكيل] في:</p>${ol('rs')}<p>تحريراً في ${d}</p><p>[يتم التوثيق في الشهر العقاري وفق الإجراءات]</p>`;
+ docOut($('#o',el),ty,h)}});
+tool('c4','c','تقويم التزامات العملاء','التزامات وتواريخها لكل عميل مع تكرار وتصدير تقويم.',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('cl','العميل')}${F('it','الالتزام (إقرار، تجديد سجل...)')}${F('dt','الاستحقاق',{type:'date',val:today()})}${F('rc','التكرار',{type:'select',opts:[['0','مرة واحدة'],['1','شهري'],['3','ربع سنوي'],['12','سنوي']]})}</div><button class="b" id="ad">إضافة</button><button class="b g" id="ic">تصدير للتقويم (.ics)</button><div class="note">لا تنبيه تلقائي والصفحة مقفولة. ملف التقويم يعطيك تنبيه الموبايل.</div></div><div class="box"><div id="ls"></div></div>`;
+ const draw=()=>listTable($('#ls',el),col('compl').slice().sort((a,b)=>a.dt.localeCompare(b.dt)),[{l:'الاستحقاق',f:x=>{const d=diffDays(today(),x.dt);return `<span class="${d<0?'over':d<=7?'ok':''}">${fd(x.dt)}${d<0?' (متأخر)':d<=7?' (قريب)':''}</span>`}},{l:'العميل',k:'cl'},{l:'الالتزام',k:'it'},{l:'التكرار',f:x=>({0:'مرة','1':'شهري','3':'ربع سنوي','12':'سنوي'})[x.rc]}],id=>{D.compl=D.compl.filter(x=>x.id!==id);save();draw()},r=>`<button class="b g s" data-ok="${r.id}">تم</button> `);draw();
+ on($('#ls',el),'[data-ok]','click',e=>{const r=D.compl.find(x=>x.id===e.target.dataset.ok);if(+r.rc>0)r.dt=addMonths(r.dt,+r.rc);else D.compl=D.compl.filter(x=>x!==r);save();draw()});
+ $('#ad',el).onclick=()=>{if(!v('cl')||!v('it'))return toast('اكتب العميل والالتزام');col('compl').push({id:uid(),cl:v('cl'),it:v('it'),dt:v('dt'),rc:v('rc')});save();draw()};
+ $('#ic',el).onclick=()=>{const r=col('compl');if(!r.length)return toast('لا التزامات');ics('compliance',r.map(x=>({title:x.cl+': '+x.it,date:x.dt,alarmMin:1440})))}});
+tool('c5','c','الأتعاب الشهرية للعملاء','اتفاق شهري لكل عميل، تسجيل الدفعات، المتأخر.',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('cl','العميل')}${F('sv','الخدمة')}${F('fe','الأتعاب الشهرية',{type:'number'})}${F('st','بداية الاتفاق',{type:'date',val:today()})}</div><button class="b" id="ad">إضافة</button></div><div class="box"><div id="ls"></div></div><div class="box"><h3>رسائل التذكير</h3><div id="cl"></div></div>`;
+ const draw=()=>{listTable($('#ls',el),col('retainers'),[{l:'العميل',k:'cl'},{l:'الخدمة',k:'sv'},{l:'شهرياً',f:r=>money(r.fee)},{l:'المتبقي',f:r=>{const d=retDue(r);return `<span class="${d.amt>0?'over':'ok'}">${money(d.amt)}</span>`}}],id=>{D.retainers=D.retainers.filter(x=>x.id!==id);save();draw()},r=>`<button class="b g s" data-pay="${r.id}">دفعة</button> `);
+ on($('#ls',el),'[data-pay]','click',e=>{const r=D.retainers.find(x=>x.id===e.target.dataset.pay);const a=parseFloat(prompt('مبلغ الدفعة',r.fee));if(a){r.pays=r.pays||[];r.pays.push({a,d:today()});save();draw()}});
+ collectionsTool($('#cl',el),true)};draw();
+ $('#ad',el).onclick=()=>{if(!v('cl')||!n('fe'))return toast('اكتب العميل والأتعاب');col('retainers').push({id:uid(),cl:v('cl'),sv:v('sv'),fee:n('fe'),start:v('st'),pays:[]});save();draw()}});
+tool('c6','c','فواتير الشركات','فاتورة داخلية بالرقم الضريبي والعنوان (غير إلكترونية).',el=>invoiceTool(el,true));
+function bookTool(el,key,label){
+ el.innerHTML=`<div class="box"><div class="warn">دفتر مبسط للمتابعة فقط، وليس دفاتر قانونية ولا بديلاً عن محاسب. قلل البيانات المالية الحساسة.</div><div class="row">${F('cl',label)}${F('ty','النوع',{type:'select',opts:[['in','إيراد'],['out','مصروف']]})}${F('dt','التاريخ',{type:'date',val:today()})}${F('am','المبلغ',{type:'number'})}${F('ds','البيان')}</div><button class="b" id="ad">إضافة</button><button class="b o" id="cv">CSV</button><div class="row">${F('fc','عرض '+label+' (فارغ = الكل)')}${F('mo','شهر',{type:'month',val:today().slice(0,7)})}</div><div id="sm"></div></div><div class="box"><div id="ls"></div></div>`;
+ const draw=()=>{const c=v('fc'),m=v('mo');const r=col(key).filter(x=>(!c||x.cl.includes(c))&&(!m||x.dt.startsWith(m)));const i=r.filter(x=>x.ty==='in').reduce((s,x)=>s+x.am,0),o=r.filter(x=>x.ty==='out').reduce((s,x)=>s+x.am,0);
+ $('#sm',el).innerHTML=RES([['إيراد',money(i)],['مصروف',money(o)],['الصافي',money(i-o)]]);
+ listTable($('#ls',el),r.slice().sort((a,b)=>b.dt.localeCompare(a.dt)),[{l:label,k:'cl'},{l:'تاريخ',f:x=>fd(x.dt)},{l:'نوع',f:x=>x.ty==='in'?'إيراد':'مصروف'},{l:'مبلغ',f:x=>money(x.am)},{l:'بيان',k:'ds'}],id=>{D[key]=D[key].filter(x=>x.id!==id);save();draw()})};draw();
+ $('#fc',el).oninput=draw;$('#mo',el).onchange=draw;
+ $('#ad',el).onclick=()=>{if(!v('cl')||!n('am'))return toast('اكتب '+label+' والمبلغ');col(key).push({id:uid(),cl:v('cl'),ty:v('ty'),dt:v('dt'),am:n('am'),ds:v('ds')});save();draw()};
+ $('#cv',el).onclick=()=>csv(key,[[label,'تاريخ','نوع','مبلغ','بيان']].concat(col(key).map(x=>[x.cl,x.dt,x.ty,x.am,x.ds])))}
+tool('c7','c','دفتر بسيط لكل عميل','إيراد ومصروف لكل عميل وملخص شهري وتصدير.',el=>bookTool(el,'books','العميل'));
+tool('c8','c','توزيع الأرباح وحسابات الشركاء','صافي الربح، احتياطي، نصيب كل شريك، المسحوبات.',el=>{
+ el.innerHTML=`<div class="box"><div class="row">${F('np','صافي الربح',{type:'number'})}${F('rs','احتياطي %',{type:'number',val:0})}</div>${F('pt','الشركاء (سطر: الاسم | النسبة % | المسحوب)',{type:'textarea',ph:'أحمد | 60 | 1000'})}<button class="b" id="go">احسب</button><div id="o"></div></div>`;
+ $('#go',el).onclick=()=>{const dist=n('np')*(1-n('rs')/100);const rows=v('pt').split('\n').filter(Boolean).map(l=>{const a=l.split('|');return {nm:a[0].trim(),p:parseFloat(a[1])||0,w:parseFloat(a[2])||0}});const tp=rows.reduce((s,r)=>s+r.p,0);
+ $('#o',el).innerHTML=(tp!==100?`<div class="warn">مجموع النسب ${tp}% وليس 100%.</div>`:'')+RES([['الاحتياطي',money(n('np')-dist)],['القابل للتوزيع',money(dist)]])+`<div class="tw"><table><tr><th>الشريك</th><th>النصيب</th><th>المسحوب</th><th>الرصيد</th></tr>${rows.map(r=>`<tr><td>${esc(r.nm)}</td><td>${money(dist*r.p/100)}</td><td>${money(r.w)}</td><td>${money(dist*r.p/100-r.w)}</td></tr>`).join('')}</table></div>`}});
+tool('c9','c','أدوات الأندية ومراكز الشباب','جدول اشتراكات، أقساط عقد لاعب، ودفتر نقدي للنادي.',el=>{
+ el.innerHTML=`<div class="box"><h3>1) جدول الاشتراكات</h3><div class="row">${F('mb','عدد الأعضاء',{type:'number'})}${F('fe','الاشتراك للعضو',{type:'number'})}${F('ds','خصم %',{type:'number',val:0})}${F('ki','عدد الأقساط',{type:'number',val:1})}</div><button class="b" id="g1">احسب</button><div id="o1"></div></div>
+ <div class="box"><h3>2) أقساط عقد لاعب</h3><div class="row">${F('pn','اللاعب')}${F('pt','إجمالي',{type:'number'})}${F('pd','مقدم',{type:'number',val:0})}${F('pk','أقساط',{type:'number',val:3})}${F('ps','أول قسط',{type:'date',val:today()})}</div><button class="b" id="g2">جدول</button><div id="o2"></div></div>
+ <div class="box"><h3>3) الدفتر النقدي للنادي</h3><div id="bk"></div></div>`;
+ $('#g1',el).onclick=()=>{const g=n('mb')*n('fe'),net=g*(1-n('ds')/100),k=Math.max(1,n('ki'));$('#o1',el).innerHTML=RES([['الإجمالي',money(g)],['بعد الخصم',money(net)],['القسط',money(net/k)]])};
+ $('#g2',el).onclick=()=>{const k=Math.max(1,n('pk')),rem=n('pt')-n('pd'),q=rem/k;let r='';for(let i=0;i<k;i++)r+=`<tr><td>${i+1}</td><td>${fd(addMonths(v('ps'),i))}</td><td>${money(q)}</td></tr>`;docOut($('#o2',el),'اقساط-لاعب',`<h2>جدول أقساط - ${esc(v('pn'))}</h2><p>الإجمالي ${money(n('pt'))} / المقدم ${money(n('pd'))}</p><table><tr><th>القسط</th><th>الموعد</th><th>المبلغ</th></tr>${r}</table>`)};
+ bookTool($('#bk',el),'clubbook','النادي/البند')});
+const ACT_DEF={'أغذية':['سجل تجاري','بطاقة ضريبية','ترخيص النشاط','موافقة صحية/غذائية','موافقة الحماية المدنية'],'دواجن':['سجل تجاري','بطاقة ضريبية','ترخيص مزرعة/نشاط','موافقة بيطرية','موافقة بيئية'],'زراعي':['سجل تجاري/زراعي','بطاقة ضريبية','تراخيص الأرض والمياه','موافقات الجهات الزراعية','موافقة بيئية إن لزم'],'رياضي':['عقد تأسيس/لائحة','اعتماد جهة رياضية','ترخيص المنشأة','تأمين اللاعبين','عقود اللاعبين'],'عام':['سجل تجاري','بطاقة ضريبية','عقد إيجار/ملكية','ترخيص نشاط','تأمينات اجتماعية']};
+tool('c10','c','قوائم التراخيص حسب النشاط','قوائم مبدئية عامة، عدّلها من دليل التنفيذ الخاص بك.',el=>{
+ if(!D.act)D.act=JSON.parse(JSON.stringify(ACT_DEF));
+ el.innerHTML=`<div class="box">${F('ac','النشاط',{type:'select',opts:Object.keys(D.act)})}<div class="warn">قوائم مبدئية عامة غير مراجعة لكل محافظة أو جهة. راجعها وعدّلها.</div><div id="ls"></div><div id="ed"></div></div>`;
+ const draw=()=>{const a=v('ac'),L=D.act[a];$('#ls',el).innerHTML=L.map(x=>`<div>☐ ${esc(x)}</div>`).join('');$('#ed',el).innerHTML=F('tx','عدّل (سطر لكل بند)',{type:'textarea',val:L.join('\n')})+'<button class="b" id="sv">حفظ</button><button class="b o" id="pr">طباعة</button>';
+ $('#sv',el).onclick=()=>{D.act[a]=v('tx').split('\n').map(x=>x.trim()).filter(Boolean);save();draw()};$('#pr',el).onclick=()=>printHtml('<h2>تراخيص '+esc(a)+'</h2>'+L.map(x=>'<p>☐ '+esc(x)+'</p>').join(''))};
+ $('#ac',el).onchange=draw;draw()});
+const DD=['السجل التجاري وعقد التأسيس والتعديلات','البطاقة الضريبية وآخر إقرار','سجل الشركاء/المساهمين وحصصهم','العقود الجوهرية مع العملاء والموردين','عقود العمل والتأمينات','التراخيص والموافقات','الملكية الفكرية والعلامة التجارية','القضايا والنزاعات القائمة','الديون والرهون والضمانات','العقود مع المؤسسين (تنازل/سرية/عدم منافسة)'];
+tool('c11','c','قائمة فحص نافي للجهالة (Due Diligence)','بنود فحص لشركة ناشئة مع ملاحظات لكل بند.',el=>{
+ el.innerHTML=`<div class="box">${F('cl','اسم الشركة المفحوصة')}<div id="ls"></div><button class="b o" id="pr">طباعة</button></div>`;
+ const draw=()=>{const c=v('cl')||'_';D.dd=D.dd||{};D.dd[c]=D.dd[c]||{};const s=D.dd[c];$('#ls',el).innerHTML=DD.map((x,i)=>`<div style="margin:8px 0"><label style="display:flex;gap:8px;align-items:center;color:inherit;font-size:16px"><input type="checkbox" data-c="${i}" style="width:auto"${s[i]&&s[i].c?' checked':''}> ${esc(x)}</label><input data-n="${i}" placeholder="ملاحظة / ملاحظة خطر" value="${esc(s[i]&&s[i].n||'')}"></div>`).join('');
+ on($('#ls',el),'[data-c]','change',e=>{const i=e.target.dataset.c;s[i]=s[i]||{};s[i].c=e.target.checked;save()});on($('#ls',el),'[data-n]','change',e=>{const i=e.target.dataset.n;s[i]=s[i]||{};s[i].n=e.target.value;save()})};
+ $('#cl',el).onchange=draw;draw();
+ $('#pr',el).onclick=()=>{const c=v('cl')||'_',s=D.dd[c]||{};printHtml(`<h2>فحص نافي للجهالة - ${esc(c)}</h2>`+DD.map((x,i)=>`<p>${s[i]&&s[i].c?'☑':'☐'} ${esc(x)}${s[i]&&s[i].n?' - '+esc(s[i].n):''}</p>`).join(''))}});
+tool('c12','c','أسئلة الشركات بالذكاء الاصطناعي','يأتي في آخر مرحلة بعد قرارك. غير مفعل الآن.',el=>{el.innerHTML='<div class="warn">غير مفعل بعد.</div>'},true);
+
+const ROBOTS={
+a:{n:'🧮 المحاسب القانوني',intro:{can:'حاسبة أتعاب، عقد أتعاب وجدول أقساط، فواتير وإيصالات، مصروفات القضايا، دفتر دخل ومصروف، تقدير رسوم المحكمة، دليل ضرائب، حاسبة مواعيد وفوائد، متابعة المتأخرات.',lim:'أرقام الرسوم والضرائب مؤقتة حتى تدخلها وتراجعها. لا يقدم إقرارات ضريبية ولا يتصل بالبنوك. البيانات تُحفظ في متصفحك فقط (جهاز واحد) فاعمل نسخة احتياطية. لا تكتب بيانات موكلين حساسة. ليس بديلاً عن محاسب أو مراجعة قانونية.'}},
+s:{n:'🗂️ سكرتير المكتب',intro:{can:'نموذج استقبال موكل، مواعيد ورسائل تأكيد، يومية الجلسات والمواعيد (مع تصدير للتقويم لتذكير الموبايل)، قوائم مستندات، مكتبة رسائل، صياغة خطابات وإنذارات، غلاف وفهرس ملف القضية، تجهيز يوم المحكمة، ملخص أسبوعي.',lim:'لا يرسل رسائل بنفسه (يجهز الرسالة وتفتح على واتساب وتضغط إرسال أنت). لا تذكير تلقائي والصفحة مقفولة؛ استخدم تصدير التقويم. لا يقرأ واتساب أو البريد. البيانات في متصفحك فقط. النصوص القانونية مسودات تحتاج مراجعتك.'}},
+c:{n:'🏢 المحاسب القانوني للشركات',intro:{can:'تقدير تكلفة تأسيس شركة، توزيع رأس المال وجدول المساهمين، مستندات الشركات (محاضر، قرارات، عقود، توكيل)، تقويم التزامات العملاء، متابعة الأتعاب الشهرية، فواتير الشركات، دفاتر بسيطة لكل عميل، توزيع الأرباح، أدوات الأندية، قوائم تراخيص، قائمة فحص نافي للجهالة.',lim:'ليس نظام محاسبة معتمداً ولا يراجع دفاتر حقيقية ولا يقدم إقرارات أو فواتير إلكترونية ولا يتصل بالهيئة العامة للاستثمار. جداول الرسوم والضرائب مؤقتة حتى تراجعها. بيانات العملاء المالية الحقيقية حساسة: قلل ما تكتبه، وانسخ احتياطياً، والنظام الخاص المدفوع أنسب لاحقاً.'}}};
+const app=()=>$('#app');
+let cur='a';
+function route(){const h=location.hash.replace('#','');const t=TOOLS.find(x=>x.id===h);if(t){cur=t.r;return showTool(t)}if(ROBOTS[h]){cur=h}home()}
+function home(){const R=ROBOTS[cur];
+ app().innerHTML=`<div class="tabs">${Object.keys(ROBOTS).map(k=>`<button data-r="${k}" class="${k===cur?'on':''}">${ROBOTS[k].n}</button>`).join('')}</div>
+ <div class="box pin"><details open><summary><b>📌 ${R.n}: ما يقدر عليه وحدوده</b></summary><p><b>يقدر على:</b> ${R.intro.can}</p><p><b>حدوده:</b> ${R.intro.lim}</p></details></div>
+ <div class="grid">${TOOLS.filter(t=>t.r===cur).map(t=>`<div class="tc${t.ai?' ai':''}" data-t="${t.id}"><b>${t.t}</b><small>${t.d}</small></div>`).join('')}</div>`;
+ on(app(),'[data-r]','click',e=>{cur=e.target.closest('[data-r]').dataset.r;location.hash=cur;home()});
+ on(app(),'[data-t]','click',e=>{location.hash=e.target.closest('[data-t]').dataset.t})}
+function showTool(t){app().innerHTML=`<button class="b o back" id="bk">← ${ROBOTS[t.r].n}</button><div class="box"><h3>${t.t}</h3><div class="note">${t.d}</div></div><div id="tv"></div>`;
+ $('#bk').onclick=()=>{location.hash=t.r};
+ try{t.f($('#tv'))}catch(e){$('#tv').innerHTML='<div class="warn">خطأ: '+esc(e.message)+'</div>'}}
+window.addEventListener('hashchange',route);
+/* lock + backup */
+async function sha(s){if(!crypto.subtle)return btoa(unescape(encodeURIComponent(s)));const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode('mo|'+s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+async function lockScreen(){
+ if(sessionStorage.getItem('mo_ok')==='1'){return true}
+ const L=$('#lock');L.style.display='flex';const first=!D.pin;
+ L.innerHTML=`<div class="box"><h3>${first?'اختر رمز دخول (4 أحرف أو أكثر)':'أدخل رمز الدخول'}</h3>${F('pn','الرمز',{type:'password'})}${first?F('pn2','أعد كتابة الرمز',{type:'password'}):''}<div class="note">القفل بسيط لإبعاد الفضوليين من نفس الجهاز، وليس تشفيراً. لا تكتب فيه أسراراً.</div><button class="b g" id="go">دخول</button><div id="le" class="over"></div></div>`;
+ return new Promise(res=>{$('#go').onclick=async()=>{const p=v('pn');if(first){if(p.length<4)return $('#le').textContent='الرمز قصير';if(p!==v('pn2'))return $('#le').textContent='الرمزان غير متطابقين';D.pin=await sha(p);save()}else if(await sha(p)!==D.pin)return $('#le').textContent='رمز خاطئ';sessionStorage.setItem('mo_ok','1');L.style.display='none';res(true)}})}
+$('#lk').onclick=()=>{sessionStorage.removeItem('mo_ok');location.reload()};
+$('#bkp').onclick=()=>{app().innerHTML=`<div class="box"><h3>نسخة احتياطية</h3><div class="note">بياناتك محفوظة في هذا المتصفح فقط. صدّر ملفاً أسبوعياً واحفظه في Drive. الملف يحتوي بياناتك فلا تشاركه.</div><button class="b" id="ex">تصدير النسخة</button><label>استيراد نسخة (يستبدل البيانات الحالية)</label><input type="file" id="im" accept=".json"><button class="b r" id="wp">مسح كل البيانات</button><button class="b o" id="bh">رجوع</button></div>`;
+ $('#ex').onclick=()=>{const c=JSON.parse(JSON.stringify(D));dl('office-backup-'+today()+'.json',JSON.stringify(c),'application/json');D.lastBackup=today();save()};
+ $('#im').onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const o=JSON.parse(t);if(confirm('استبدال البيانات الحالية؟')){D=o;save();toast('تم الاستيراد');location.hash='';route()}}catch(x){alert('ملف غير صالح')}})};
+ $('#wp').onclick=()=>{if(confirm('مسح كل البيانات نهائياً؟')){D={pin:D.pin};save();location.hash='';route()}};$('#bh').onclick=()=>{route()}};
+(async()=>{await lockScreen();route();if(D.lastBackup&&diffDays(D.lastBackup,today())>7)toast('مرّ أكثر من أسبوع على آخر نسخة احتياطية')})();
+
+</script>
+</body></html>
